@@ -18,13 +18,13 @@ def scrape_quotes():
             text = quote_item.find("span", class_="text").text
             author = quote_item.find("small", class_="author").text
             tags = [tag.text for tag in quote_item.find_all("a", class_="tag")]
-            quotes.append({"text": text, "author": author, "tags": tags})
+            quotes.append({"quote": text, "author": author, "tags": tags})
         page += 1
     return quotes
 
 
 def scrape_authors():
-    authors = set()
+    authors_info = []
     page = 1
     while True:
         response = requests.get(f"{url}/page/{page}/")
@@ -33,10 +33,15 @@ def scrape_authors():
         if not authors_list:
             break
         for author_item in authors_list:
-            author = author_item.find("small", class_="author").text
-            authors.add(author)
+            author_name = author_item.find("small", class_="author").text
+            author_description = author_item.find("span", class_="text").text
+            authors_info.append({"fullname": author_name, "description": author_description})
         page += 1
-    return list(authors)
+    return authors_info
+
+
+
+
 
 
 def write_to_json(data, filename):
